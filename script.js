@@ -1,3 +1,6 @@
+// Efeitos de rato só em dispositivos com rato
+const canHover = matchMedia('(hover:hover) and (pointer:fine)').matches;
+
 // Ano no rodapé
 document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -119,7 +122,7 @@ document.querySelectorAll('a, .btn, button').forEach(el => {
 });
 
 // Efeito magnético
-document.querySelectorAll('.magnetic').forEach(el => {
+if (canHover) document.querySelectorAll('.magnetic').forEach(el => {
   el.addEventListener('mousemove', e => {
     const r = el.getBoundingClientRect();
     const x = (e.clientX - r.left - r.width / 2) * 0.25;
@@ -130,7 +133,7 @@ document.querySelectorAll('.magnetic').forEach(el => {
 });
 
 // Inclinação 3D nos cartões
-document.querySelectorAll('.tilt').forEach(card => {
+if (canHover) document.querySelectorAll('.tilt').forEach(card => {
   card.addEventListener('mousemove', e => {
     const r = card.getBoundingClientRect();
     const x = (e.clientX - r.left) / r.width - 0.5;
