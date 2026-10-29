@@ -2037,3 +2037,339 @@ h2 em {
         transform: none;
     }
 }
+
+
+@media (max-width: 700px) {
+    /* TÍTULO DA HOME */
+
+    .hero h1 {
+        font-size: clamp(28px, 7.8vw, 48px);
+        font-weight: 500;
+        line-height: 1.18;
+        letter-spacing: -1.2px;
+    }
+
+    .hero h1 em {
+        color: #b3d5ff;
+    }
+
+    .hero-description {
+        color: #c3cee0;
+        font-size: 15px;
+        line-height: 1.75;
+    }
+
+    .hero-top .eyebrow {
+        color: #d4dfef;
+        font-size: 11px;
+        letter-spacing: 0.6px;
+    }
+
+    .hero-index {
+        color: #aabbd4;
+        font-size: 9px;
+        letter-spacing: 1px;
+    }
+
+    /* BOTÕES */
+
+    .button,
+    .hero-copy .button {
+        min-height: 50px;
+        padding: 16px 22px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    /* TÍTULOS DAS SECÇÕES */
+
+    h2,
+    .about h2 {
+        color: #f3f6fc;
+        font-size: clamp(32px, 8.5vw, 42px);
+        font-weight: 500;
+        line-height: 1.15;
+        letter-spacing: -1px;
+    }
+
+    h2 em {
+        color: #b3d5ff;
+    }
+
+    .section-label .eyebrow {
+        color: #b5c9e6;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 1.1px;
+    }
+
+    /* PERFIL E DESCRIÇÕES */
+
+    .about-copy p,
+    .project > p,
+    .visual-heading p:not(.eyebrow),
+    .process-grid p:not(.eyebrow),
+    .timeline p:not(.eyebrow),
+    .faq-answer p {
+        color: #bac7da;
+        font-size: 15px;
+        line-height: 1.75;
+    }
+
+    /* PROJETOS */
+
+    .project-meta h3 {
+        color: #f3f6fc;
+        font-size: 25px;
+        font-weight: 500;
+    }
+
+    .project-meta .eyebrow,
+    .photo-meta .eyebrow {
+        color: #a8c5eb;
+        font-size: 10px;
+        letter-spacing: 0.7px;
+    }
+
+    .pill,
+    .tags span,
+    .service .tags span {
+        color: #c2d8f5;
+        font-size: 10px;
+    }
+
+    .visual-heading h3 {
+        font-size: 30px;
+        font-weight: 500;
+    }
+
+    .photo-meta h4 {
+        color: #eef4ff;
+        font-size: 15px;
+        font-weight: 500;
+        line-height: 1.45;
+    }
+
+    /* SERVIÇOS */
+
+    .service h3 {
+        color: #f3f6fc;
+        font-size: 19px;
+        font-weight: 500;
+    }
+
+    .service p {
+        color: #bac7da;
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    /* PERCURSO E PROCESSO */
+
+    .timeline h3,
+    .process-grid h3 {
+        color: #eef4ff;
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 1.4;
+    }
+
+    .timeline .eyebrow,
+    .process-grid .eyebrow {
+        font-size: 10px;
+    }
+
+    /* PERGUNTAS E LINKS */
+
+    .faq summary {
+        color: #edf3fd;
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+    .text-link {
+        color: #d6e7ff;
+        font-size: 14px;
+    }
+
+    /* CONTACTOS */
+
+    .email {
+        color: #edf4ff;
+        font-size: clamp(14px, 4vw, 20px);
+    }
+
+    .contact-links,
+    .copy-button {
+        color: #d2e0f4;
+        font-size: 13px;
+    }
+
+    .copy-status,
+    .footer p,
+    .footer > a:last-child {
+        font-size: 12px;
+    }
+}
+
+/* TIPOGRAFIA MAIS CLEAN */
+
+body,
+button {
+    font-family: "Poppins", Arial, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    color: #f5f8ff;
+    font-weight: 600;
+}
+
+.hero h1 {
+    font-weight: 600;
+    letter-spacing: -2px;
+}
+
+.hero h1 em,
+h2 em {
+    color: #acd0ff;
+
+    font-family: inherit;
+    font-style: normal;
+    font-weight: 500;
+}
+
+.hero-description,
+.about-copy p,
+.project > p,
+.visual-heading p:not(.eyebrow),
+.service p,
+.timeline p:not(.eyebrow),
+.process-grid p:not(.eyebrow),
+.faq-answer p {
+    color: #c1ccdd;
+}
+
+.project-meta h3,
+.visual-heading h3,
+.service h3,
+.timeline h3,
+.process-grid h3,
+.photo-meta h4 {
+    font-weight: 500;
+}
+
+.text-link {
+    color: #d8e9ff;
+    font-weight: 500;
+}
+
+/* SETA MAIS ACIMA E MAIS VISÍVEL */
+
+.hero {
+    padding-bottom: 45px;
+}
+
+.hero-scroll {
+    width: 44px;
+    height: 44px;
+
+    border: 1px solid #8bbdff;
+    border-radius: 50%;
+
+    background: #183458;
+    color: #ffffff;
+
+    box-shadow: 0 0 20px #589fff26;
+
+    font-size: 23px;
+    font-weight: 500;
+
+    transition:
+        background 250ms ease,
+        box-shadow 250ms ease,
+        transform 250ms ease;
+}
+
+.hero-scroll:hover {
+    border-color: #b8d8ff;
+
+    background: #28558c;
+
+    box-shadow: 0 0 28px #589fff40;
+
+    transform: translateY(-3px);
+}
+
+.hero-scroll span {
+    animation: scroll-nudge 3s ease-in-out infinite;
+}
+
+/* AJUSTES MOBILE */
+
+@media (max-width: 700px) {
+    .hero {
+        padding-bottom: 42px;
+    }
+
+    .hero h1 {
+        font-size: clamp(25px, 6.8vw, 42px);
+        font-weight: 600;
+        line-height: 1.3;
+        letter-spacing: -1px;
+    }
+
+    .hero h1 em {
+        letter-spacing: -1px;
+    }
+
+    .hero-description {
+        font-size: 15px;
+        line-height: 1.8;
+    }
+
+    h2,
+    .about h2 {
+        font-size: clamp(30px, 8vw, 40px);
+        font-weight: 600;
+        line-height: 1.25;
+        letter-spacing: -1px;
+    }
+
+    .visual-heading h3 {
+        font-size: 29px;
+        font-weight: 600;
+        line-height: 1.3;
+        letter-spacing: -0.8px;
+    }
+
+    .photo-meta h4 {
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+    .hero-scroll {
+        width: 42px;
+        height: 42px;
+
+        font-size: 22px;
+    }
+
+    .button,
+    .hero-copy .button {
+        font-size: 14px;
+        font-weight: 500;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-scroll span {
+        animation: none;
+    }
+
+    .hero-scroll:hover {
+        transform: none;
+    }
+}
