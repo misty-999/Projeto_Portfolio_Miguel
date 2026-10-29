@@ -1,151 +1,96 @@
-// Efeitos de rato só em dispositivos com rato
-const canHover = matchMedia('(hover:hover) and (pointer:fine)').matches;
-
-// Ano no rodapé
-document.getElementById('year').textContent = new Date().getFullYear();
-
-// Barra de progresso
-const bar = document.querySelector('.progress');
-addEventListener('scroll', () => {
-  const h = document.documentElement;
-  bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100 + '%';
-}, { passive: true });
-
-// Menu mobile
-const burger = document.querySelector('.burger');
-const menu = document.getElementById('menu');
-function setMenu(open) {
-  burger.classList.toggle('open', open);
-  menu.classList.toggle('open', open);
-  menu.setAttribute('aria-hidden', !open);
-  burger.setAttribute('aria-expanded', open);
-  burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+'use strict';
+const toggle = document.querySelector('.menu-toggle');
+const mobileMenu = document.getElementById('mobile-menu');
+let menuOpen = false;
+let menuAnimation;
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const background = [document.querySelector('main'), document.querySelector('footer'), document.querySelector('.desktop-nav'), document.querySelector('.header-contact'), document.querySelector('.logo')];
+function setMenu(open, restoreFocus = true) {
+  menuOpen = open;
+  if (menuAnimation) menuAnimation.cancel();
+  toggle.setAttribute('aria-expanded', String(open));
+  toggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
   document.body.classList.toggle('locked', open);
+  background.forEach(element => { if (element) element.inert = open; });
+  if (open) {
+    mobileMenu.hidden = false;
+    if (!reducedMotion.matches) {
+      menuAnimation = mobileMenu.animate([{opacity:0,transform:'translateY(-16px)'},{opacity:1,transform:'translateY(0)'}], {duration:340,easing:'cubic-bezier(.2,.8,.2,1)'});
+      mobileMenu.querySelectorAll('.menu-links a').forEach((link, index) => {
+        link.animate([{opacity:0,transform:'translateY(28px)'},{opacity:1,transform:'translateY(0)'}], {duration:460,delay:70+index*45,fill:'backwards',easing:'cubic-bezier(.2,.8,.2,1)'});
+      });
+    }
+    mobileMenu.querySelector('.menu-links a').focus({preventScroll:true});
+  } else {
+    if (restoreFocus) toggle.focus({preventScroll:true});
+    mobileMenu.inert = true;
+    if (reducedMotion.matches) { mobileMenu.hidden = true; mobileMenu.inert = false; }
+    else {
+      menuAnimation = mobileMenu.animate([{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(-12px)'}], {duration:190,easing:'ease-in'});
+      menuAnimation.finished.then(() => { if (!menuOpen) { mobileMenu.hidden = true; mobileMenu.inert = false; } }).catch(() => {});
+    }
+  }
+  if (open) mobileMenu.inert = false;
 }
-burger.addEventListener('click', () => setMenu(!menu.classList.contains('open')));
-menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
-addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
-
-// Menu desktop: indicador que desliza + secção ativa
-const nav = document.getElementById('nav');
-const links = [...nav.querySelectorAll('a')];
-const ind = nav.querySelector('.ind');
-let current = links[0];
-function moveInd(el) {
-  ind.style.width = el.offsetWidth + 'px';
-  ind.style.transform = `translateX(${el.offsetLeft}px)`;
-}
-function setActive(el) {
-  current = el;
-  links.forEach(l => l.classList.toggle('active', l === el));
-  moveInd(el);
-}
-links.forEach(l => {
-  l.addEventListener('mouseenter', () => moveInd(l));
-  l.addEventListener('mouseleave', () => moveInd(current));
+toggle.addEventListener('click', () => setMenu(!menuOpen));
+mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+  const target = link.hash && link.origin === location.origin ? document.querySelector(link.hash) : null;
+  setMenu(false, !target);
+  if (target) {
+    target.setAttribute('tabindex', '-1');
+    target.focus({preventScroll:true});
+    target.addEventListener('blur', () => target.removeAttribute('tabindex'), {once:true});
+  }
+}));
+document.addEventListener('keydown', event => {
+  if (!menuOpen) return;
+  if (event.key === 'Escape') { event.preventDefault(); setMenu(false); }
+  if (event.key === 'Tab') {
+    const items = [toggle, ...mobileMenu.querySelectorAll('a')];
+    const first = items[0], last = items[items.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  }
 });
-nav.addEventListener('mouseleave', () => moveInd(current));
-addEventListener('resize', () => moveInd(current));
-document.fonts && document.fonts.ready.then(() => moveInd(current));
-moveInd(current);
-
-// Secção ativa ao fazer scroll
-const sectionIds = links.map(l => l.getAttribute('href').slice(1));
-const so = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (!e.isIntersecting) return;
-    let id = e.target.id;
-    if (id === 'tools') id = 'path';
-    const l = links.find(x => x.getAttribute('href') === '#' + id);
-    if (l) setActive(l);
-  });
-}, { rootMargin: '-45% 0px -50% 0px' });
-document.querySelectorAll('[data-section]').forEach(s => so.observe(s));
-
-// Revelar ao fazer scroll
-const io = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('in');
-      io.unobserve(e.target);
+const header = document.querySelector('.header');
+const progress = document.querySelector('.reading-progress');
+let scrollQueued = false;
+function updateScroll() {
+  const distance = document.documentElement.scrollHeight - innerHeight;
+  progress.style.transform = `scaleX(${distance > 0 ? Math.min(1, Math.max(0, scrollY / distance)) : 0})`;
+  header.classList.toggle('scrolled', scrollY > 24);
+  scrollQueued = false;
+}
+addEventListener('scroll', () => { if (!scrollQueued) { scrollQueued = true; requestAnimationFrame(updateScroll); } }, {passive:true});
+addEventListener('resize', updateScroll);
+updateScroll();
+document.querySelectorAll('.faq details').forEach(detail => {
+  detail.addEventListener('toggle', () => {
+    if (detail.open) {
+      document.querySelectorAll('.faq details').forEach(other => { if (other !== detail) other.open = false; });
+      if (!reducedMotion.matches) detail.querySelector('.faq-answer').animate([{opacity:0,transform:'translateY(-7px)'},{opacity:1,transform:'translateY(0)'}], {duration:260,easing:'ease-out'});
     }
   });
-}, { threshold: 0.15 });
-document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-
-// Linha do tempo que se preenche com o scroll
-const tlWrap = document.querySelector('.timeline');
-const tlFill = document.querySelector('.tl-line i');
-if (tlWrap && tlFill) {
-  const upd = () => {
-    const r = tlWrap.getBoundingClientRect();
-    const p = Math.min(1, Math.max(0, (innerHeight * 0.65 - r.top) / r.height));
-    tlFill.style.height = p * 100 + '%';
-  };
-  addEventListener('scroll', upd, { passive: true });
-  addEventListener('resize', upd);
-  upd();
+});
+document.getElementById('year').textContent = new Date().getFullYear();
+if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.add('in'); observer.unobserve(entry.target); }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(element => observer.observe(element));
+  document.documentElement.classList.add('js-motion');
 }
-
-// Contador de seguidores
-const counter = document.querySelector('[data-count]');
-if (counter) {
-  const end = +counter.dataset.count;
-  const co = new IntersectionObserver((entries) => {
-    if (!entries[0].isIntersecting) return;
-    const t0 = performance.now(), dur = 1800;
-    const tick = (t) => {
-      const k = Math.min(1, (t - t0) / dur);
-      counter.textContent = Math.round(end * (1 - Math.pow(1 - k, 4)));
-      if (k < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-    co.disconnect();
-  }, { threshold: 0.5 });
-  co.observe(counter);
+if ('IntersectionObserver' in window) {
+  const navLinks = [...document.querySelectorAll('.desktop-nav a')];
+  const sections = new IntersectionObserver(entries => {
+    entries.forEach(entry => { if (entry.isIntersecting) navLinks.forEach(link => {
+      const active = link.hash === '#' + entry.target.id;
+      link.classList.toggle('active', active);
+      if (active) link.setAttribute('aria-current', 'location'); else link.removeAttribute('aria-current');
+    }); });
+  }, { rootMargin: '-15% 0px -55% 0px' });
+  document.querySelectorAll('main section[id]').forEach(section => sections.observe(section));
 }
-
-// Cursor personalizado
-const cursor = document.querySelector('.cursor');
-let cx = 0, cy = 0, tx = 0, ty = 0;
-addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; });
-(function loop() {
-  cx += (tx - cx) * 0.18;
-  cy += (ty - cy) * 0.18;
-  cursor.style.left = cx + 'px';
-  cursor.style.top = cy + 'px';
-  requestAnimationFrame(loop);
-})();
-document.querySelectorAll('a, .btn, button').forEach(el => {
-  el.addEventListener('mouseenter', () => cursor.classList.add('big'));
-  el.addEventListener('mouseleave', () => cursor.classList.remove('big'));
-});
-
-// Efeito magnético
-if (canHover) document.querySelectorAll('.magnetic').forEach(el => {
-  el.addEventListener('mousemove', e => {
-    const r = el.getBoundingClientRect();
-    const x = (e.clientX - r.left - r.width / 2) * 0.25;
-    const y = (e.clientY - r.top - r.height / 2) * 0.25;
-    el.style.transform = `translate(${x}px, ${y}px)`;
-  });
-  el.addEventListener('mouseleave', () => el.style.transform = '');
-});
-
-// Inclinação 3D nos cartões
-if (canHover) document.querySelectorAll('.tilt').forEach(card => {
-  card.addEventListener('mousemove', e => {
-    const r = card.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width - 0.5;
-    const y = (e.clientY - r.top) / r.height - 0.5;
-    card.style.transform = `perspective(900px) rotateY(${x * 7}deg) rotateX(${-y * 7}deg) translateY(-4px)`;
-  });
-  card.addEventListener('mouseleave', () => card.style.transform = '');
-});
-
-// Aurora segue ligeiramente o rato
-const blobs = document.querySelectorAll('.aurora i');
-addEventListener('mousemove', e => {
-  const x = (e.clientX / innerWidth - 0.5), y = (e.clientY / innerHeight - 0.5);
-  blobs.forEach((b, i) => { b.style.translate = `${x * (30 + i * 20)}px ${y * (30 + i * 20)}px`; });
-});
+document.getElementById('copy-email').addEventListener('click', async () => {
