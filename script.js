@@ -546,3 +546,23 @@ const year = document.getElementById("year");
 if (year) {
     year.textContent = new Date().getFullYear();
 }
+
+// Remove as setas do site, mantendo apenas a do botão da home.
+
+document.querySelectorAll("a").forEach((link) => {
+    if (link.matches(".hero-copy .button")) {
+        return;
+    }
+
+    const walker = document.createTreeWalker(
+        link,
+        NodeFilter.SHOW_TEXT
+    );
+
+    let node;
+
+    while ((node = walker.nextNode())) {
+        node.textContent = node.textContent
+            .replace(/[↗↘↑↓→←]/gu, "");
+    }
+});
